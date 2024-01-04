@@ -1,0 +1,176 @@
+[project]
+name = "fava"
+dynamic = ["version"]
+description = "Web interface for the accounting tool Beancount."
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {text = "MIT License"}
+authors = [
+  {name = "Dominik Aumayr", email = "dominik@aumayr.name"}
+]
+maintainers = [
+  {name = "Jakob Schnitzer", email = "mail@jakobschnitzer.de"}
+]
+keywords = ["fava", "beancount", "accounting",]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Web Environment",
+    "Framework :: Flask",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: JavaScript",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Office/Business :: Financial :: Accounting",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+dependencies = [
+    "Babel>=2.7,<3",
+    "Flask-Babel>=1,<5",
+    "Flask>=2.2,<4",
+    "Jinja2>=3,<4",
+    "Werkzeug>=2.2,<4",
+    "beancount>=2.3.5,<3",
+    "cheroot>=8,<11",
+    "click>=7,<9",
+    "markdown2>=2.3.0,<3",
+    "ply",
+    "simplejson>=3.16.0,<4",
+]
+
+[project.urls]
+Homepage = "https://beancount.github.io/fava/"
+Changelog = "https://beancount.github.io/fava/changelog.html"
+Source = "https://github.com/beancount/fava/"
+Issues = "https://github.com/beancount/fava/issues/"
+Chat = "https://gitter.im/beancount/fava"
+
+[project.scripts]
+fava = "fava.cli:main"
+
+[project.optional-dependencies]
+# Extra dependencies that are needed for the export to excel.
+excel =[
+    "pyexcel>=0.5",
+    "pyexcel-ods3>=0.5",
+    "pyexcel-xlsx>=0.5",
+]
+# Extra dependencies that are used in tests or for linting.
+dev = [
+    "build",
+    "furo",
+    "mypy",
+    "pre-commit",
+    "pyinstaller",
+    "pylint",
+    "pytest",
+    "pytest-cov",
+    "setuptools",
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "tox",
+    "twine",
+    "types-setuptools",
+    "types-simplejson",
+]
+
+[build-system]
+requires = ["setuptools>=60", "setuptools_scm>=8.0", "Babel>=2.7,<3"]
+build-backend = "_build_backend"
+backend-path = ["."]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[tool.black]
+line-length = 79
+preview = true
+
+[tool.mypy]
+mypy_path = "stubs"
+strict = true
+
+[tool.pylint.'messages control']
+disable = [
+    "too-few-public-methods",
+    "too-many-branches",
+    "too-many-instance-attributes",
+    "duplicate-code",
+    "invalid-unary-operand-type",    # type-checking like, had false-positives
+    "not-an-iterable",               # type-checking like, had false-positives
+    "unsubscriptable-object",        # type-checking like, had false-positives
+    "broad-except",                  # is checked by ruff (BLE)
+    "too-many-return-statements",    # is checked by ruff (PLR0911)
+    "too-many-arguments",            # is checked by ruff (PLR0913)
+    "redefined-builtin",             # is checked by ruff (A002)
+    "protected-access",              # is checked by ruff (SLF001)
+    "invalid-name",                  # is checked by ruff (N)
+    "missing-docstring",             # is checked by ruff (D)
+]
+
+[tool.pytest.ini_options]
+filterwarnings = "ignore:.*locked_cached_property.*deprecated:DeprecationWarning"
+
+[tool.ruff]
+target-version = "py38"
+preview = true
+line-length = 79
+extend-select = [
+    "ALL",
+]
+extend-ignore = [
+    "A003",     # allow class attributes to shadow builtins
+    "ANN101",   # allow `self` to be untyped
+    "ANN401",   # allow `typing.Any`
+    "C901",     # ignore mccabe complecity for now
+    "CPY",      # no copyright notices in all files
+    "D102",     # allow undocumented methods
+    "D105",     # allow magic methods to be undocumented
+    "D107",     # allow __init__ to be undocumented - the class should be.
+    "DTZ",      # allow naive dates (for now)
+    "E203",     # black
+    "EM101",    # allow long strings as error messages
+    "EM102",    # allow f-strings as error messages
+    "PD",       # pandas-related, has false-positives
+    "PERF203",  # allow try-except in loop; zero-cost since Python 3.11
+    "PLR2004",  # allow magic constants in comparisons
+    "PLR6301",  # allow methods that do not use self
+    "S603",     # This is a bit over-zelous on subprocess.run
+    "TRY003",   # allow long string constants as error messages
+]
+
+[tool.ruff.flake8-type-checking]
+strict = true  # always move type-only imports to TYPE_CHECKING-if blocks
+
+[tool.ruff.isort]
+force-single-line = true
+order-by-type = false
+known-first-party = ["fava"]
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.pylint]
+max-args = 9
+
+[tool.ruff.per-file-ignores]
+"contrib/**" = ["D", "INP"]
+"docs/**" = ["D", "ANN", "INP"]
+"tests/conftest.py" = ["S101"]
+"tests/test_*.py" = ["D", "S101"]
+"tests/data/import_config.py" = ["ANN", "INP"]
+"src/fava/ext/portfolio_list/__init__.py" = ["ANN"]
+"stubs/**" = ["D"]
+"src/fava/core/filters.py" = ["D"]
